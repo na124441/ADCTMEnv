@@ -305,7 +305,7 @@ When any zone approaches a critical temperature, jitter penalties are **disabled
 
 ```bash
 # Clone the repository
-git clone https://github.com/na124441/ADCTM
+git clone https://github.com/na124441/ADCTMEnv/tree/master
 cd ADCTMSubmission
 
 # Install dependencies
