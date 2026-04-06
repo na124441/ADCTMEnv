@@ -202,7 +202,17 @@ if [ ! -f "$REPO_DIR/run_tests.py" ] || [ ! -f "$REPO_DIR/tests/test_submission_
 fi
 
 TEST_OK=false
-TEST_OUTPUT=$(cd "$REPO_DIR" && run_with_timeout "$TEST_TIMEOUT" run_python run_tests.py tests/test_submission_readiness.py 2>&1) && TEST_OK=true
+TEST_OUTPUT=$(cd "$REPO_DIR" && run_with_timeout "$TEST_TIMEOUT" bash -lc '
+if command -v python3 >/dev/null 2>&1; then
+  exec python3 run_tests.py tests/test_submission_readiness.py
+elif command -v python >/dev/null 2>&1; then
+  exec python run_tests.py tests/test_submission_readiness.py
+elif command -v py >/dev/null 2>&1; then
+  exec py -3 run_tests.py tests/test_submission_readiness.py
+else
+  exit 127
+fi
+' 2>&1) && TEST_OK=true
 
 if [ "$TEST_OK" = true ]; then
   pass "Submission-readiness tests passed"
@@ -221,7 +231,19 @@ if ! has_openenv_cli; then
 fi
 
 VALIDATE_OK=false
-VALIDATE_OUTPUT=$(cd "$REPO_DIR" && run_with_timeout "$OPENENV_TIMEOUT" run_openenv_validate 2>&1) && VALIDATE_OK=true
+VALIDATE_OUTPUT=$(cd "$REPO_DIR" && run_with_timeout "$OPENENV_TIMEOUT" bash -lc '
+if command -v openenv >/dev/null 2>&1; then
+  exec openenv validate
+elif command -v python3 >/dev/null 2>&1; then
+  exec python3 -m openenv.cli validate
+elif command -v python >/dev/null 2>&1; then
+  exec python -m openenv.cli validate
+elif command -v py >/dev/null 2>&1; then
+  exec py -3 -m openenv.cli validate
+else
+  exit 127
+fi
+' 2>&1) && VALIDATE_OK=true
 
 if [ "$VALIDATE_OK" = true ]; then
   pass "openenv validate passed"
