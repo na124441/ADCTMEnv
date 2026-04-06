@@ -1,0 +1,11 @@
+fastapi==0.112.0
+uvicorn[standard]==0.30.1
+pydantic>=2.0.0
+numpy
+openai
+requests==2.32.3
+openenv-core
+python-dotenv
+rich
+pytest
+ollama

@@ -1,0 +1,3 @@
+﻿ALPHA = 7.5
+BETA = 8.0
+GAMMA = 0.1

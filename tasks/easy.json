@@ -1,0 +1,12 @@
+{
+  "num_zones": 3,
+  "initial_temperatures": [67.5, 68.0, 67.0],
+  "initial_workloads": [0.72, 0.78, 0.70],
+  "ambient_temperature": 42.0,
+  "safe_temperature": 74.0,
+  "max_steps": 18,
+  "target_temperature": 63.0,
+  "seed": 101,
+  "workload_volatility": 0.03,
+  "jitter_bypass_threshold": 1.0
+}

@@ -1,0 +1,44 @@
+# openenv.yaml
+name: "ADCTM"
+version: "1.0.0"
+description: |
+  Autonomous Data Centre Thermal Management (ADCTM).
+  A real-world simulation of data center cooling.
+  Agent controls multi-zone cooling power based on thermal dynamics,
+  workload profiles, and ambient temperatures.
+
+author: "OpenEnv Team"
+license: "MIT"
+tags: ["physics", "cooling", "data-center", "sustainability", "real-world"]
+
+# Spec Compliance
+entrypoint: server.app:app
+
+observation:
+  type: "core.models.Observation"
+  description: "Thermal state, workloads, and previous control signals."
+
+action:
+  type: "core.models.Action"
+  description: "Normalized cooling fraction [0, 1] per zone."
+
+reward:
+  type: "core.models.Reward"
+  description: "Composite reward covering safety, target tracking, energy cost, and control jitter."
+
+capabilities:
+  - "reset"
+  - "step"
+  - "state"
+
+tasks:
+  - easy
+  - medium
+  - hard
+
+metadata:
+  difficulty: "variable"
+  domain: "engineering"
+  base_url: null
+  env_id: null
+

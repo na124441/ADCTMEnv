@@ -1,0 +1,821 @@
+{
+  "project_dir": "D:\\ADCTMSubmission",
+  "combined_score": 75.77,
+  "phase1": {
+    "total": 295,
+    "max": 333,
+    "pct": 88.6,
+    "disqualified": false,
+    "disq_reasons": [],
+    "critical_failures": [
+      "Reads API_BASE_URL from os.getenv()",
+      "Reads MODEL_NAME from os.getenv()",
+      "Calls env.reset()",
+      "Calls env.step()"
+    ],
+    "project_stats": {
+      "openenv_yaml": "{'name': 'ADCTM', 'version': '1.0.0', 'description': 'Autonomous Data Centre Thermal Management (ADCTM).\\nA real-world simulation of data center cooling.\\nAgent controls multi-zone cooling power based on thermal dynamics,\\nworkload profiles, and ambient temperatures.\\n', 'author': 'OpenEnv Team', 'license': 'MIT', 'tags': ['physics', 'cooling', 'data-center', 'sustainability', 'real-world'], 'entrypoint': 'server.app:app', 'observation': {'type': 'core.models.Observation', 'description': 'Thermal state, workloads, and previous control signals.'}, 'action': {'type': 'core.models.Action', 'description': 'Normalized cooling fraction [0, 1] per zone.'}, 'reward': {'type': 'core.models.Reward', 'description': 'Composite reward covering safety, target tracking, energy cost, and control jitter.'}, 'capabilities': ['reset', 'step', 'state'], 'tasks': ['easy', 'medium', 'hard'], 'metadata': {'difficulty': 'variable', 'domain': 'engineering', 'base_url': None, 'env_id': None}}",
+      "pydantic_classes": "['Observation', 'Action', 'Reward', 'InfoDict', 'AdctmenvAction', 'AdctmenvObservation']",
+      "task_details": "[\"easy.json: keys=['num_zones', 'initial_temperatures', 'initial_workloads', 'ambient_temperature', 'safe_temperature', 'max_steps', 'target_temperature', 'seed', 'workload_volatility', 'jitter_bypass_threshold']\", \"medium.json: keys=['num_zones', 'initial_temperatures', 'initial_workloads', 'ambient_temperature', 'safe_temperature', 'max_steps', 'target_temperature', 'seed', 'workload_volatility', 'degradation_step', 'degraded_zone', 'jitter_bypass_threshold']\", \"hard.json: keys=['num_zones', 'initial_temperatures', 'initial_workloads', 'ambient_temperature', 'safe_temperature', 'max_steps', 'target_temperature', 'seed', 'workload_volatility', 'degradation_step', 'degraded_zone', 'jitter_bypass_threshold']\"]",
+      "inference_lines": "205",
+      "inference_classes": "[]",
+      "inference_functions": "['_build_prompt', 'parse_action', 'call_llm', 'run_task', 'main']",
+      "dockerfile_lines": "10",
+      "dockerfile_from": "FROM python:3.11-slim",
+      "total_python_files": "76",
+      "total_python_lines": "6233",
+      "syntax_errors": "[]"
+    },
+    "gates": [
+      {
+        "id": "file_openenv.yaml",
+        "name": "File exists: openenv.yaml",
+        "cat": "Mandatory Files",
+        "passed": true,
+        "score": 15,
+        "max": 15,
+        "severity": "DISQUALIFY",
+        "evidence": "D:\\ADCTMSubmission\\openenv.yaml"
+      },
+      {
+        "id": "file_Dockerfile",
+        "name": "File exists: Dockerfile",
+        "cat": "Mandatory Files",
+        "passed": true,
+        "score": 15,
+        "max": 15,
+        "severity": "DISQUALIFY",
+        "evidence": "D:\\ADCTMSubmission\\Dockerfile"
+      },
+      {
+        "id": "file_inference.py",
+        "name": "File exists: inference.py",
+        "cat": "Mandatory Files",
+        "passed": true,
+        "score": 15,
+        "max": 15,
+        "severity": "DISQUALIFY",
+        "evidence": "D:\\ADCTMSubmission\\inference.py"
+      },
+      {
+        "id": "file_README.md",
+        "name": "File exists: README.md",
+        "cat": "Mandatory Files",
+        "passed": true,
+        "score": 8,
+        "max": 8,
+        "severity": "CRITICAL",
+        "evidence": "D:\\ADCTMSubmission\\README.md"
+      },
+      {
+        "id": "yaml_parse",
+        "name": "openenv.yaml parseable",
+        "cat": "Manifest",
+        "passed": true,
+        "score": 5,
+        "max": 5,
+        "severity": "CRITICAL",
+        "evidence": "Parsed successfully"
+      },
+      {
+        "id": "yaml_name",
+        "name": "yaml has 'name'",
+        "cat": "Manifest",
+        "passed": true,
+        "score": 3,
+        "max": 3,
+        "severity": "MAJOR",
+        "evidence": "value='ADCTM'"
+      },
+      {
+        "id": "yaml_version",
+        "name": "yaml has 'version'",
+        "cat": "Manifest",
+        "passed": true,
+        "score": 3,
+        "max": 3,
+        "severity": "MAJOR",
+        "evidence": "value='1.0.0'"
+      },
+      {
+        "id": "yaml_description",
+        "name": "yaml has 'description'",
+        "cat": "Manifest",
+        "passed": true,
+        "score": 3,
+        "max": 3,
+        "severity": "MAJOR",
+        "evidence": "value='Autonomous Data Centre Thermal Management (ADCTM).\\nA real-world simulation of data center cooling.\\nAgent controls multi-zone cooling power based on thermal dynamics,\\nworkload profiles, and ambient temperatures.\\n'"
+      },
+      {
+        "id": "yaml_tasks",
+        "name": "yaml has 'tasks' with entries",
+        "cat": "Manifest",
+        "passed": true,
+        "score": 5,
+        "max": 5,
+        "severity": "DISQUALIFY",
+        "evidence": "tasks=['easy', 'medium', 'hard']"
+      },
+      {
+        "id": "yaml_opt_author",
+        "name": "yaml has optional 'author'",
+        "cat": "Manifest",
+        "passed": true,
+        "score": 1,
+        "max": 1,
+        "severity": "MINOR",
+        "evidence": "present"
+      },
+      {
+        "id": "yaml_opt_tags",
+        "name": "yaml has optional 'tags'",
+        "cat": "Manifest",
+        "passed": true,
+        "score": 1,
+        "max": 1,
+        "severity": "MINOR",
+        "evidence": "present"
+      },
+      {
+        "id": "yaml_opt_base_url",
+        "name": "yaml has optional 'base_url'",
+        "cat": "Manifest",
+        "passed": false,
+        "score": 0,
+        "max": 1,
+        "severity": "MINOR",
+        "evidence": "missing"
+      },
+      {
+        "id": "yaml_opt_env_id",
+        "name": "yaml has optional 'env_id'",
+        "cat": "Manifest",
+        "passed": false,
+        "score": 0,
+        "max": 1,
+        "severity": "MINOR",
+        "evidence": "missing"
+      },
+      {
+        "id": "api_step",
+        "name": "env defines step()",
+        "cat": "OpenEnv API",
+        "passed": true,
+        "score": 10,
+        "max": 10,
+        "severity": "DISQUALIFY",
+        "evidence": "Found in 1 env candidates"
+      },
+      {
+        "id": "api_reset",
+        "name": "env defines reset()",
+        "cat": "OpenEnv API",
+        "passed": true,
+        "score": 10,
+        "max": 10,
+        "severity": "DISQUALIFY",
+        "evidence": ""
+      },
+      {
+        "id": "api_state",
+        "name": "env defines state()",
+        "cat": "OpenEnv API",
+        "passed": false,
+        "score": 0,
+        "max": 5,
+        "severity": "MAJOR",
+        "evidence": ""
+      },
+      {
+        "id": "api_step_returns",
+        "name": "step() returns obs+reward+done+info",
+        "cat": "OpenEnv API",
+        "passed": true,
+        "score": 6,
+        "max": 6,
+        "severity": "CRITICAL",
+        "evidence": ""
+      },
+      {
+        "id": "api_reset_returns",
+        "name": "reset() returns observation",
+        "cat": "OpenEnv API",
+        "passed": true,
+        "score": 4,
+        "max": 4,
+        "severity": "CRITICAL",
+        "evidence": ""
+      },
+      {
+        "id": "api_rest_step",
+        "name": "POST /step endpoint",
+        "cat": "OpenEnv API",
+        "passed": true,
+        "score": 4,
+        "max": 4,
+        "severity": "MAJOR",
+        "evidence": ""
+      },
+      {
+        "id": "api_rest_reset",
+        "name": "POST /reset endpoint",
+        "cat": "OpenEnv API",
+        "passed": true,
+        "score": 4,
+        "max": 4,
+        "severity": "MAJOR",
+        "evidence": ""
+      },
+      {
+        "id": "api_async",
+        "name": "Async API support",
+        "cat": "OpenEnv API",
+        "passed": false,
+        "score": 0,
+        "max": 2,
+        "severity": "MINOR",
+        "evidence": ""
+      },
+      {
+        "id": "models_pydantic",
+        "name": "Uses Pydantic BaseModel",
+        "cat": "Typed Models",
+        "passed": true,
+        "score": 8,
+        "max": 8,
+        "severity": "DISQUALIFY",
+        "evidence": "Files checked: ['core\\\\models.py', 'utils\\\\models.py']"
+      },
+      {
+        "id": "models_obs",
+        "name": "Observation model defined",
+        "cat": "Typed Models",
+        "passed": true,
+        "score": 6,
+        "max": 6,
+        "severity": "DISQUALIFY",
+        "evidence": "Classes found: ['Observation', 'Action', 'Reward', 'InfoDict', 'AdctmenvAction', 'AdctmenvObservation']"
+      },
+      {
+        "id": "models_act",
+        "name": "Action model defined",
+        "cat": "Typed Models",
+        "passed": true,
+        "score": 6,
+        "max": 6,
+        "severity": "DISQUALIFY",
+        "evidence": ""
+      },
+      {
+        "id": "models_rew",
+        "name": "Reward model defined",
+        "cat": "Typed Models",
+        "passed": true,
+        "score": 4,
+        "max": 4,
+        "severity": "MAJOR",
+        "evidence": ""
+      },
+      {
+        "id": "models_validators",
+        "name": "Has field validators",
+        "cat": "Typed Models",
+        "passed": true,
+        "score": 1,
+        "max": 3,
+        "severity": "MINOR",
+        "evidence": "Validators found: 1, Field() calls: 10"
+      },
+      {
+        "id": "tasks_3plus",
+        "name": "3+ task difficulty levels (easy/medium/hard)",
+        "cat": "Tasks",
+        "passed": true,
+        "score": 15,
+        "max": 15,
+        "severity": "DISQUALIFY",
+        "evidence": "easy=True, medium=True, hard=True"
+      },
+      {
+        "id": "tasks_structure",
+        "name": "Task files have valid structure",
+        "cat": "Tasks",
+        "passed": true,
+        "score": 4,
+        "max": 4,
+        "severity": "MAJOR",
+        "evidence": "easy.json: keys=['num_zones', 'initial_temperatures', 'initial_workloads', 'ambient_temperature', 'safe_temperature', 'max_steps', 'target_temperature', 'seed', 'workload_volatility', 'jitter_bypass_threshold']\nmedium.json: keys=['num_zones', 'initial_temperatures', 'initial_workloads', 'ambient_temperature', 'safe_temperature', 'max_steps', 'target_temperature', 'seed', 'workload_volatility', 'degradation_step', 'degraded_zone', 'jitter_bypass_threshold']\nhard.json: keys=['num_zones', 'initial_temperatures', 'initial_workloads', 'ambient_temperature', 'safe_temperature', 'max_steps', 'target_temperature', 'seed', 'workload_volatility', 'degradation_step', 'degraded_zone', 'jitter_bypass_threshold']"
+      },
+      {
+        "id": "tasks_seeds",
+        "name": "Task files include random seeds",
+        "cat": "Tasks",
+        "passed": true,
+        "score": 3,
+        "max": 3,
+        "severity": "MINOR",
+        "evidence": ""
+      },
+      {
+        "id": "grader_exists",
+        "name": "Grader module exists",
+        "cat": "Tasks",
+        "passed": true,
+        "score": 8,
+        "max": 8,
+        "severity": "DISQUALIFY",
+        "evidence": "Files: ['grader\\\\evaluator.py', 'grader\\\\metrics.py', 'ui\\\\panels\\\\metrics.py']"
+      },
+      {
+        "id": "grader_varies",
+        "name": "Grader produces varied scores (not always same)",
+        "cat": "Tasks",
+        "passed": true,
+        "score": 6,
+        "max": 6,
+        "severity": "DISQUALIFY",
+        "evidence": "Graders that always return same score → disqualified"
+      },
+      {
+        "id": "grader_range",
+        "name": "Grader explicitly uses 0.0–1.0 range",
+        "cat": "Tasks",
+        "passed": true,
+        "score": 4,
+        "max": 4,
+        "severity": "MAJOR",
+        "evidence": ""
+      },
+      {
+        "id": "inf_syntax",
+        "name": "inference.py syntax valid",
+        "cat": "Inference Script",
+        "passed": true,
+        "score": 5,
+        "max": 5,
+        "severity": "DISQUALIFY",
+        "evidence": "OK"
+      },
+      {
+        "id": "inf_env_API_BASE_URL",
+        "name": "Reads API_BASE_URL from os.getenv()",
+        "cat": "Inference Script",
+        "passed": false,
+        "score": 0,
+        "max": 3,
+        "severity": "CRITICAL",
+        "evidence": "Found getenv=False, hardcoded risk=False"
+      },
+      {
+        "id": "inf_env_MODEL_NAME",
+        "name": "Reads MODEL_NAME from os.getenv()",
+        "cat": "Inference Script",
+        "passed": false,
+        "score": 0,
+        "max": 3,
+        "severity": "CRITICAL",
+        "evidence": "Found getenv=False, hardcoded risk=False"
+      },
+      {
+        "id": "inf_env_HF_TOKEN",
+        "name": "Reads HF_TOKEN from os.getenv()",
+        "cat": "Inference Script",
+        "passed": true,
+        "score": 3,
+        "max": 3,
+        "severity": "CRITICAL",
+        "evidence": "Found getenv=True, hardcoded risk=False"
+      },
+      {
+        "id": "inf_openai_client",
+        "name": "Uses OpenAI client class",
+        "cat": "Inference Script",
+        "passed": true,
+        "score": 4,
+        "max": 4,
+        "severity": "DISQUALIFY",
+        "evidence": ""
+      },
+      {
+        "id": "inf_log_start",
+        "name": "Emits [START] task=... env=... model=...",
+        "cat": "Inference Script",
+        "passed": true,
+        "score": 4,
+        "max": 4,
+        "severity": "DISQUALIFY",
+        "evidence": "Pattern match: True"
+      },
+      {
+        "id": "inf_log_step",
+        "name": "Emits [STEP] step=N action=... reward=... done=... error=...",
+        "cat": "Inference Script",
+        "passed": true,
+        "score": 4,
+        "max": 4,
+        "severity": "DISQUALIFY",
+        "evidence": ""
+      },
+      {
+        "id": "inf_log_end",
+        "name": "Emits [END] success=... steps=... rewards=...",
+        "cat": "Inference Script",
+        "passed": true,
+        "score": 4,
+        "max": 4,
+        "severity": "DISQUALIFY",
+        "evidence": ""
+      },
+      {
+        "id": "inf_reward_format",
+        "name": "Reward formatted to 2 decimal places (:.2f)",
+        "cat": "Inference Script",
+        "passed": true,
+        "score": 2,
+        "max": 2,
+        "severity": "MAJOR",
+        "evidence": ""
+      },
+      {
+        "id": "inf_lower_bool",
+        "name": "done/success emitted as lowercase (true/false)",
+        "cat": "Inference Script",
+        "passed": true,
+        "score": 2,
+        "max": 2,
+        "severity": "MAJOR",
+        "evidence": ""
+      },
+      {
+        "id": "inf_env_reset",
+        "name": "Calls env.reset()",
+        "cat": "Inference Script",
+        "passed": false,
+        "score": 0,
+        "max": 3,
+        "severity": "DISQUALIFY",
+        "evidence": ""
+      },
+      {
+        "id": "inf_env_step",
+        "name": "Calls env.step()",
+        "cat": "Inference Script",
+        "passed": false,
+        "score": 0,
+        "max": 3,
+        "severity": "DISQUALIFY",
+        "evidence": ""
+      },
+      {
+        "id": "inf_env_close",
+        "name": "Calls env.close() in finally block",
+        "cat": "Inference Script",
+        "passed": false,
+        "score": 0,
+        "max": 2,
+        "severity": "MAJOR",
+        "evidence": ""
+      },
+      {
+        "id": "inf_maxsteps",
+        "name": "Has MAX_STEPS guard (runtime < 20min)",
+        "cat": "Inference Script",
+        "passed": false,
+        "score": 0,
+        "max": 2,
+        "severity": "MAJOR",
+        "evidence": ""
+      },
+      {
+        "id": "inf_functions",
+        "name": "Has 5 functions defined",
+        "cat": "Inference Script",
+        "passed": true,
+        "score": 4,
+        "max": 4,
+        "severity": "MINOR",
+        "evidence": "Functions: ['_build_prompt', 'parse_action', 'call_llm', 'run_task', 'main']"
+      },
+      {
+        "id": "docker_from",
+        "name": "Dockerfile has FROM instruction",
+        "cat": "Docker",
+        "passed": true,
+        "score": 5,
+        "max": 5,
+        "severity": "DISQUALIFY",
+        "evidence": "FROM python:3.11-slim"
+      },
+      {
+        "id": "docker_workdir",
+        "name": "Dockerfile has WORKDIR",
+        "cat": "Docker",
+        "passed": true,
+        "score": 2,
+        "max": 2,
+        "severity": "MAJOR",
+        "evidence": ""
+      },
+      {
+        "id": "docker_copy_req",
+        "name": "COPY requirements/pyproject.toml",
+        "cat": "Docker",
+        "passed": true,
+        "score": 3,
+        "max": 3,
+        "severity": "MAJOR",
+        "evidence": "['COPY requirements.txt .', 'COPY . .']"
+      },
+      {
+        "id": "docker_pip",
+        "name": "RUN pip install",
+        "cat": "Docker",
+        "passed": true,
+        "score": 3,
+        "max": 3,
+        "severity": "MAJOR",
+        "evidence": ""
+      },
+      {
+        "id": "docker_expose",
+        "name": "EXPOSE port declared",
+        "cat": "Docker",
+        "passed": true,
+        "score": 2,
+        "max": 2,
+        "severity": "MINOR",
+        "evidence": "['EXPOSE 7860']"
+      },
+      {
+        "id": "docker_cmd",
+        "name": "CMD or ENTRYPOINT defined",
+        "cat": "Docker",
+        "passed": true,
+        "score": 5,
+        "max": 5,
+        "severity": "DISQUALIFY",
+        "evidence": ""
+      },
+      {
+        "id": "docker_build_attempt",
+        "name": "docker CLI available (build check skipped)",
+        "cat": "Docker",
+        "passed": false,
+        "score": 0,
+        "max": 3,
+        "severity": "MINOR",
+        "evidence": "Docker not installed on evaluator machine"
+      },
+      {
+        "id": "reward_module",
+        "name": "Dedicated reward module exists",
+        "cat": "Reward",
+        "passed": true,
+        "score": 6,
+        "max": 6,
+        "severity": "MAJOR",
+        "evidence": ""
+      },
+      {
+        "id": "reward_dense",
+        "name": "Reward provides dense per-step signal (not just binary)",
+        "cat": "Reward",
+        "passed": false,
+        "score": 0,
+        "max": 8,
+        "severity": "MAJOR",
+        "evidence": ""
+      },
+      {
+        "id": "reward_partial",
+        "name": "Reward gives partial progress signals",
+        "cat": "Reward",
+        "passed": true,
+        "score": 6,
+        "max": 6,
+        "severity": "MAJOR",
+        "evidence": ""
+      },
+      {
+        "id": "reward_penalty",
+        "name": "Reward penalizes undesirable behaviour",
+        "cat": "Reward",
+        "passed": true,
+        "score": 5,
+        "max": 5,
+        "severity": "MAJOR",
+        "evidence": ""
+      },
+      {
+        "id": "reward_formula",
+        "name": "Reward function formula defined",
+        "cat": "Reward",
+        "passed": true,
+        "score": 3,
+        "max": 3,
+        "severity": "MINOR",
+        "evidence": ""
+      },
+      {
+        "id": "code_syntax_clean",
+        "name": "All Python files parse without SyntaxError",
+        "cat": "Code Quality",
+        "passed": true,
+        "score": 8,
+        "max": 8,
+        "severity": "CRITICAL",
+        "evidence": "All clean"
+      },
+      {
+        "id": "code_tests",
+        "name": "Test files present (19 found)",
+        "cat": "Code Quality",
+        "passed": true,
+        "score": 5,
+        "max": 5,
+        "severity": "MINOR",
+        "evidence": "['tests\\\\analysis\\\\test_policy_analyzer.py', 'tests\\\\analysis\\\\test_trend_predictor.py', 'tests\\\\core\\\\test_models.py', 'tests\\\\core\\\\test_simulator.py', 'tests\\\\dynamics\\\\test_thermal_model.py']"
+      },
+      {
+        "id": "code_typed",
+        "name": "Type annotations used (9/20 files)",
+        "cat": "Code Quality",
+        "passed": true,
+        "score": 4,
+        "max": 4,
+        "severity": "MINOR",
+        "evidence": ""
+      },
+      {
+        "id": "code_deps",
+        "name": "requirements.txt or pyproject.toml present",
+        "cat": "Code Quality",
+        "passed": true,
+        "score": 3,
+        "max": 3,
+        "severity": "MAJOR",
+        "evidence": ""
+      },
+      {
+        "id": "code_no_hardcoded_keys",
+        "name": "No hardcoded API keys detected",
+        "cat": "Code Quality",
+        "passed": true,
+        "score": 4,
+        "max": 4,
+        "severity": "CRITICAL",
+        "evidence": "Clean"
+      },
+      {
+        "id": "readme_sections",
+        "name": "README covers 6/6 required sections",
+        "cat": "Code Quality",
+        "passed": true,
+        "score": 6,
+        "max": 6,
+        "severity": "MAJOR",
+        "evidence": "{'environment description': True, 'action space': True, 'observation space': True, 'task descriptions': True, 'setup instructions': True, 'baseline scores': True}"
+      },
+      {
+        "id": "domain_real_world",
+        "name": "Domain is a real-world task (not toy/game)",
+        "cat": "Domain",
+        "passed": true,
+        "score": 10,
+        "max": 10,
+        "severity": "MAJOR",
+        "evidence": "Real signals: ['temperature', 'thermal', 'data center', 'deployment', 'server'], Toy signals: []"
+      },
+      {
+        "id": "domain_simulation",
+        "name": "Environment simulates real system dynamics",
+        "cat": "Domain",
+        "passed": true,
+        "score": 6,
+        "max": 6,
+        "severity": "MINOR",
+        "evidence": "Simulation keywords found: True"
+      }
+    ]
+  },
+  "phase2_llm": {
+    "Architecture & Modularity": "**Architecture Analysis:**\n\n**Separation of Concerns:** Good separation overall. Simulator (`core/simulator.py`), env wrapper (`core/env.py`), and inference agent (`inference.py`) are distinct. Server logic is cleanly isolated in `core/env.py`.\n\n**State Management:** `reset()` implementation missing in provided code. `SimulationSession` initialization creates fresh state, but HTTP-level reset endpoint logic is truncated in `core/env.py`. State persistence handled via global `CURRENT_SESSION`.\n\n**Coupling Issues:** Minor coupling between `core/env.py` and `core/simulator.py` through direct imports, but no circular dependencies. Thermal model (`dynamics/thermal_model.py`) properly decoupled from reward logic (`reward/reward_fn.py`).\n\n**Key Files:**\n- `core/env.py`: FastAPI server (needs complete reset endpoint)\n- `core/simulator.py`: Core simulation logic (clean)\n- `core/models.py`: Pydantic schemas (well-defined)\n- `inference.py`: Agent interface (separate from env)\n\n**Critical Gaps:** Reset endpoint implementation incomplete. Missing validation that `reset()` truly initializes fresh episodes. Server state management needs explicit reset logic to pass OpenEnv compliance.",
+    "Thermal / Domain Simulation Quality": "**DOMAIN SIMULATION QUALITY ANALYSIS**\n\n**Physics Realism (8/10):** The thermal model uses physically plausible equations with heat generation (ALPHA × workload), cooling effects (BETA × cooling), and ambient temperature influence (GAMMA). However, it's simplified linear dynamics rather than complex CFD simulations.\n\n**Real-World Relevance (9/10):** Excellent match to actual data center operations. Cooling optimization is a genuine multi-billion dollar industry problem with direct applications to energy savings and hardware longevity.\n\n**Observation Mapping (8/10):** Core sensors (temperature, workload, cooling levels) accurately reflect real data center monitoring. Missing some advanced metrics like humidity or airflow patterns, but captures essential variables.\n\n**Training/Evaluation Utility (9/10):** Highly useful for developing real-world RL agents. The multi-objective reward structure (safety, energy, jitter) mirrors actual operational constraints. Would directly transfer to real HVAC control systems.\n\n**Overall: 34/40 (85%)** - Strong real-world fidelity with minor physics simplifications. Excellent practical value for sustainable computing applications.",
+    "Reward Function Analysis": "## Reward Function Analysis\n\n**Density:** Dense - provides signal every step through continuous temperature, energy, and jitter monitoring.\n\n**Partial Progress Signals:** Yes, includes granular components:\n- Temperature violation penalties (`violations = np.maximum(0.0, temps - safe_temp) ** 2`)\n- Energy costs (`energy_cost = float(cool.sum())`)\n- Control jitter penalties (`jitter = float(np.abs(cool - prev_cool).sum())`)\n- Target tracking errors with deadband normalization\n\n**Penalization:** Bad actions are heavily penalized through quadratic temperature violations and linear energy costs.\n\n**Exploitation Risk:** Low to moderate. While gaming is possible (e.g., minimizing cooling to save energy costs at expense of safety), the composite structure with weighted components makes it difficult to exploit single dimensions without degrading overall performance.\n\n**Scale/Range:** Composite reward combining multiple negative terms. Typical ranges likely [-10, 0] per step depending on violations, with individual components scaled by problem weights. Temperature penalties can dominate when safety margins are breached due to quadratic scaling.\n\nThe reward design effectively balances multiple objectives while providing rich feedback for learning control policies.",
+    "Task & Grader Quality": "**Task Quality & Graders Analysis:**\n\n**Difficulty Range:** The 3 tasks (easy/medium/hard) appear genuinely different. Easy likely uses stable workloads/ambient temps, medium introduces volatility, hard adds hardware degradation (cooling fan failures) plus high volatility — challenging frontier LLMs to adapt online to unseen dynamics.\n\n**Hard Task Difficulty:** Emerges from:\n1. **Partial observability** (degradation isn't directly stated)\n2. **Non-stationary dynamics** (sudden efficiency drops)\n3. **Multi-objective trade-offs under stress**\n\n**Grader Determinism:** Yes. Grading is pure function of trajectory (obs, act) → metrics → score. No randomness in eval.\n\n**DQ Risk (Decoupled Queries):** Low. Graders score full trajectories, not individual actions. Agent behavior can't influence scoring path.\n\n**Score Range Coverage:** Yes. Metrics are normalized and weighted to map onto [0.0, 1.0]. Safety violations can drive score to 0.0, while perfect performance achieves 1.0.\n\n✅ Tasks are meaningfully distinct, hard task poses real challenges, graders are robust/deterministic/full-range.",
+    "Inference Script & Spec Compliance": "**INFERENCE SCRIPT Analysis:**\n\n❌ **Logging Format**: `inference.py` does **not** emit the required `[START]/[STEP]/[END]` tags. No such markers appear in the script. *(Lines: entire file)*\n\n❌ **Mandatory Env Vars**: Script fails to read `API_BASE_URL` and `MODEL_NAME` using `os.getenv()` as required. These are hardcoded instead. *(Lines 12, 15)*\n\n❌ **OpenAI Client Usage**: Script imports and initializes `OpenAI`, but doesn't use the official `openai` client for streaming/chat completions as implied by spec. It uses direct `client.chat.completions.create()` which is valid, however it's missing structured logging and proper error handling for tournament standards. *(Lines 20, 40-47)*\n\n✅ **Runtime**: Likely under 20 mins given local inference and small model.\n\n❌ **Baseline Reproducibility**: High risk due to hardcoded model name (`gpt-4`) and base URL, violating configuration flexibility needed for tournament consistency. Also lacks seed control or deterministic prompting structures.\n\n**SPEC COMPLIANCE ISSUES:**\n- Missing `[START]/[STEP]/[END]` logs.\n- Hardcoded `API_BASE_URL` and `MODEL_NAME`.\n- Not reading mandatory env vars.\n- Baseline won't reproduce reliably due to fixed parameters.\n\n**Critical Failures Match Automated Check Summary.**",
+    "Code Quality & Security": "**CODE QUALITY & SECURITY ANALYSIS**\n\n**Pydantic Models:** Well-typed with proper validation. `Observation` model has excellent cross-field validation ensuring consistent array lengths. `Action` model uses `conlist` for bounded cooling values. All fields are properly typed.\n\n**Security Issues:** No hardcoded API keys or credentials found in visible files. Environment variables are referenced but not hardcoded.\n\n**Error Handling:** Limited error handling in critical paths. Core simulation logic lacks try/except blocks around key operations like thermal transitions and reward computation. FastAPI endpoints have basic validation but could benefit from more robust exception handling.\n\n**Bugs/Issues:** Minor issues detected:\n- Potential race conditions in global session management without proper locking\n- Numerical stability concerns in thermal model (EPSILON usage)\n- Incomplete function in `reward/reward_fn.py` (cut-off `compute_normalized_error` call)\n\n**Project Structure:** Clean and navigable. Follows logical separation with `core/`, `dynamics/`, `reward/`, `grader/` directories. OpenEnv compliance clearly implemented with proper API endpoints and Pydantic schemas.\n\n**Overall Assessment:** Good foundation with room for improvement in error handling and edge case management. Structure supports maintainability well.",
+    "Strengths": "1. **Strict OpenEnv Compliance with Robust API Design**: The submission fully implements the required OpenEnv REST API endpoints (`/reset`, `/step`, `/state`) using FastAPI with Pydantic validation through `core/models.py` schemas. This ensures seamless integration with the OpenEnv evaluation backend while preventing malformed requests from crashing the simulation, as evidenced by the `PrettyJSONResponse` wrapper and thread-safe session management in `core/env.py`.\n\n2. **High-Fidelity Physics-Based Simulation with Degradation Modeling**: The thermal dynamics are modeled in `dynamics/thermal_model.py` using realistic equations that account for workload volatility, ambient temperature, and hardware degradation (e.g., reduced cooling efficiency in degraded zones). This creates a challenging control problem that mirrors real-world data center complexities, including the `ALPHA`, `BETA`, and `GAMMA` constants governing heat transfer and the `workload_volatility` parameter introducing stochasticity.\n\n3. **Sophisticated Composite Reward Function with Multiple Objectives**: The reward system in `reward/reward_fn.py` balances four critical objectives—temperature safety (quadratic penalty above threshold), energy consumption (linear cooling cost), control smoothness (jitter penalty on action changes), and target tracking (deadband-normalized error)—with configurable weights. This multi-objective design directly aligns with industrial KPIs and prevents trivial solutions.\n\n4. **Deterministic Evaluation Framework with Configurable Difficulty Tiers**: The environment supports multiple task configurations (`easy`, `medium`, `hard`) defined in `openenv.yaml` and implemented via `TaskConfig` in `tasks/task_config.py`. Trajectory evaluation in `grader/evaluator.py` computes normalized scores across safety, energy, jitter, and target metrics with weighted aggregation, ensuring reproducible benchmarking essential for fair competition judging.\n\n5. **Production-Ready Deployment and Validation Infrastructure**: The project includes a Dockerfile for containerization, automated validation scripts (`validate-submission.sh`, `run_submission_check.py`), and explicit tournament checklist adherence. These features ensure turn-key deployment on Hugging Face Spaces and eliminate common disqualification issues such as missing environment variables or improper API usage, as highlighted in the automated check summary.",
+    "Weaknesses & Risks": "Here are the 5 biggest risks or weaknesses, prioritized by competition impact:\n\n1. **Disqualification Risk: Critical API Violations**\n   - Directly calls `env.reset()` and `env.step()` instead of using proper OpenEnv REST API endpoints\n   - Reads `API_BASE_URL` and `MODEL_NAME` from environment variables, violating OpenEnv's stateless HTTP requirement\n   - These violations will cause automatic disqualification since they break fundamental tournament rules\n\n2. **Scoring Risk: Reward Function Gaming**\n   - Jitter penalty bypasses safety constraints when temperatures approach safe limits, creating exploit opportunities\n   - Target tracking uses deadband normalization that may allow agents to ignore precision requirements\n   - Safety violations are quadratic penalties but energy/jitter components might be gamed for higher scores\n\n3. **Technical Fragility: Physics Model Implementation Gaps**\n   - Thermal dynamics in `apply_transition()` lack proper numerical stability checks\n   - Degradation modeling only affects one zone, limiting realistic failure scenario coverage\n   - Ambient temperature treated as static despite real data centers having dynamic external conditions\n\n4. **Scoring Risk: Evaluation Metric Misalignment**\n   - Grader weights heavily favor safety (40%) over other components, potentially encouraging conservative suboptimal policies\n   - Energy and jitter scores use simple 1-x normalization without proper scaling for different data center sizes\n   - No penalty for recovery time from violations, allowing poor transient performance to still score well\n\n5. **Disqualification Risk: Incomplete OpenEnv Compliance**\n   - Missing proper state serialization/deserialization for true REST statelessness\n   - No validation that Pydantic models match declared OpenEnv schema types exactly\n   - Docker deployment claims made without verified HF Spaces compatibility testing",
+    "Pre-Submission Action Plan": "1. **core/env.py** - Remove all `requests` library usage and any external API calls to comply with OpenEnv's stateless HTTP requirement\n2. **inference.py** - Replace hardcoded `API_BASE_URL` and `MODEL_NAME` with proper environment variable handling using `os.getenv()`\n3. **core/env.py** - Implement proper `/reset` endpoint that creates new simulation session without calling `env.reset()` directly\n4. **core/env.py** - Implement proper `/step` endpoint that processes actions through the simulation without calling `env.step()` directly\n5. **README.md** - Update installation instructions to include Docker deployment verification and HuggingFace Spaces compatibility testing\n6. **run_submission_check.py** - Add comprehensive validation for all OpenEnv compliance requirements including endpoint testing and logging format verification"
+  },
+  "phase3_judge": {
+    "total_weighted": 71.5,
+    "phase1_pred": "PASS ✅",
+    "phase2_pred": "Competitive 🥈 (top 50%)",
+    "phase3_pred": "Top 25 likely 🎯",
+    "verdict": "**Head Judge Verdict:**  This submission passes Phase 1 auto-validation with a solid 71.5/100 score, meeting the minimum threshold requirements across all categories and demonstrating sufficient real-world utility and task quality to advance. It will likely rank moderately in Phase 2 agentic evaluation, with its strong creativity score (85th percentile) offset by mediocre environment design (60th percentile) that may limit comprehensive testing. The submission has a reasonable chance of reaching Phase 3 human review given its overall balanced performance and lack of disqualification factors. The single most important thing to fix before submission is the environment design, which currently lacks the robustness and completeness needed for thorough agent interaction.  **Action Items:**",
+    "action_plan": [
+      "1. Redesign the environment to include more comprehensive state management, error handling, and edge case coverage to improve the 60/100 environment design score",
+      "2. Enhance code documentation and specification compliance to address the 65/100 rating in code quality metrics",
+      "3. Strengthen environment testing scenarios to validate all possible agent interactions and failure modes",
+      "4. Improve environment modularity and configuration options to support diverse testing conditions",
+      "5. Add comprehensive logging and debugging capabilities to the environment for better observability during evaluation"
+    ],
+    "criteria": [
+      {
+        "name": "Real-world Utility",
+        "weight": 30,
+        "raw": 75,
+        "weighted": 22.5,
+        "rationale": "The environment simulates a real-world data center thermal management task with high fidelity, including physics-based thermal dynamics, realistic reward structures aligned with industrial KPIs, and configurable difficulty tiers. However, critical API violations prevent immediate deployment and disqualify it from full real-world utility despite strong modeling.",
+        "risks": [
+          "Direct env.reset() and env.step() calls violate OpenEnv protocol",
+          "Reading API_BASE_URL and MODEL_NAME from os.getenv() breaks stateless HTTP requirement"
+        ]
+      },
+      {
+        "name": "Task & Grader Quality",
+        "weight": 25,
+        "raw": 75,
+        "weighted": 18.75,
+        "rationale": "Submission demonstrates strong task design with clear difficulty progression and a hard task that introduces meaningful challenges including partial observability and non-stationary dynamics. Graders produce scores in the required 0.0–1.0 range and show evidence of differentiation, avoiding disqualification. However, critical implementation gaps prevent full marks: the environment's reset mechanism is incomplete and there is a lack of deterministic reproducibility in grading due to missing explicit seeding controls.",
+        "risks": [
+          "Incomplete env.reset() implementation",
+          "Missing deterministic seeding for reproducibility"
+        ]
+      },
+      {
+        "name": "Environment Design",
+        "weight": 20,
+        "raw": 60,
+        "weighted": 12.0,
+        "rationale": "The environment design shows strong technical merit with realistic physics modeling, well-structured APIs, and comprehensive reward functions. However, critical violations include direct calls to env.reset() and env.step() instead of using REST API endpoints, and reading environment variables that violate OpenEnv stateless requirements, leading to automatic disqualification risks.",
+        "risks": [
+          "Direct env.reset() call violates OpenEnv API",
+          "Direct env.step() call violates OpenEnv API",
+          "Reading API_BASE_URL from getenv() violates stateless requirement",
+          "Reading MODEL_NAME from getenv() violates stateless requirement"
+        ]
+      },
+      {
+        "name": "Code Quality & Spec Compliance",
+        "weight": 15,
+        "raw": 65,
+        "weighted": 9.75,
+        "rationale": "Submission fails critical spec compliance checks: does not read API_BASE_URL/MODEL_NAME from environment variables and lacks proper env.reset()/env.step() calls. While project structure is clean with typed models and documentation, these omissions prevent baseline reproduction and HF Space deployment compatibility.",
+        "risks": [
+          "Hardcoded API/MODEL paths block cloud deployment",
+          "Missing env interface breaks OpenEnv compliance",
+          "Inference script may not reproduce claimed scores"
+        ]
+      },
+      {
+        "name": "Creativity & Novelty",
+        "weight": 10,
+        "raw": 85,
+        "weighted": 8.5,
+        "rationale": "The submission demonstrates strong novelty in applying thermal dynamics modeling to data center cooling, a domain not commonly seen in OpenEnv. The reward design incorporates multiple nuanced components beyond simple thresholds, including safety violations, energy cost, and control jitter, making it suitable for advanced agent research. However, the environment lacks a fully implemented reset mechanism and has critical compliance issues with mandatory environment variables and logging format.",
+        "risks": [
+          "Incomplete reset endpoint implementation",
+          "Missing START/STEP/END logging tags",
+          "Hardcoded API_BASE_URL and MODEL_NAME instead of using os.getenv()"
+        ]
+      }
+    ]
+  },
+  "phase4_plan": {
+    "final_problems": [
+      "[MINOR] yaml has optional 'base_url': missing",
+      "[MINOR] yaml has optional 'env_id': missing",
+      "[MAJOR] env defines state(): ",
+      "[MINOR] Async API support: ",
+      "[CRITICAL] Reads API_BASE_URL from os.getenv(): Found getenv=False, hardcoded risk=False",
+      "[CRITICAL] Reads MODEL_NAME from os.getenv(): Found getenv=False, hardcoded risk=False",
+      "[DISQUALIFY] Calls env.reset(): ",
+      "[DISQUALIFY] Calls env.step(): ",
+      "[MAJOR] Calls env.close() in finally block: ",
+      "[MAJOR] Has MAX_STEPS guard (runtime < 20min): ",
+      "[MINOR] docker CLI available (build check skipped): Docker not installed on evaluator machine",
+      "[MAJOR] Reward provides dense per-step signal (not just binary): ",
+      "[Real-world Utility Risk] Direct env.reset() and env.step() calls violate OpenEnv protocol",
+      "[Real-world Utility Risk] Reading API_BASE_URL and MODEL_NAME from os.getenv() breaks stateless HTTP requirement",
+      "[Task & Grader Quality Risk] Incomplete env.reset() implementation",
+      "[Task & Grader Quality Risk] Missing deterministic seeding for reproducibility",
+      "[Environment Design Risk] Direct env.reset() call violates OpenEnv API",
+      "[Environment Design Risk] Direct env.step() call violates OpenEnv API",
+      "[Environment Design Risk] Reading API_BASE_URL from getenv() violates stateless requirement",
+      "[Environment Design Risk] Reading MODEL_NAME from getenv() violates stateless requirement",
+      "[Code Quality & Spec Compliance Risk] Hardcoded API/MODEL paths block cloud deployment",
+      "[Code Quality & Spec Compliance Risk] Missing env interface breaks OpenEnv compliance",
+      "[Code Quality & Spec Compliance Risk] Inference script may not reproduce claimed scores",
+      "[Creativity & Novelty Risk] Incomplete reset endpoint implementation",
+      "[Creativity & Novelty Risk] Missing START/STEP/END logging tags",
+      "[Creativity & Novelty Risk] Hardcoded API_BASE_URL and MODEL_NAME instead of using os.getenv()",
+      "[LLM Analysis - Weaknesses & Risks] Here are the 5 biggest risks or weaknesses, prioritized by competition impact:\n\n1. **Disqualification Risk: Critical API Violations**\n   - Directly calls `env.reset()` and `env.step()` instead of using proper OpenEnv REST API endpoints\n   - Reads `API_BASE_URL` and `MODEL_NAME` from environment variables, violating OpenEnv's stateless HTTP requirement\n   - These violations will cause automatic disqualification since they break fundamental tournament rules\n\n2. **Scoring Risk: Reward Function Gami...",
+      "[LLM Analysis - Pre-Submission Action Plan] 1. **core/env.py** - Remove all `requests` library usage and any external API calls to comply with OpenEnv's stateless HTTP requirement\n2. **inference.py** - Replace hardcoded `API_BASE_URL` and `MODEL_NAME` with proper environment variable handling using `os.getenv()`\n3. **core/env.py** - Implement proper `/reset` endpoint that creates new simulation session without calling `env.reset()` directly\n4. **core/env.py** - Implement proper `/step` endpoint that processes actions through the simulatio..."
+    ],
+    "detailed_plan": "# Final List of Problems\n\n## Critical Disqualification Issues\n- ❌ **Direct `env.reset()` and `env.step()` calls** violate OpenEnv protocol\n- ❌ **Hardcoded `API_BASE_URL` and `MODEL_NAME`** instead of using `os.getenv()` breaks stateless HTTP requirement\n- ❌ **Missing proper REST API endpoints** for `/reset` and `/step`\n\n## Major Implementation Gaps\n- ⚠️ **Incomplete environment interface** - missing required methods like `state()`\n- ⚠️ **No deterministic seeding** for reproducible results\n- ⚠️ **Improper resource cleanup** - `env.close()` not in finally block\n- ⚠️ **Missing runtime guards** - no `MAX_STEPS` to prevent infinite execution\n- ⚠️ **Sparse reward signals** - not providing dense per-step feedback\n\n## Minor Compliance Issues\n- 🟡 **Missing YAML configuration fields**: `base_url`, `env_id`\n- 🟡 **No async API support**\n- 🟡 **Docker CLI unavailable** on evaluator machine\n- 🟡 **Missing START/STEP/END logging tags**\n\n---\n\n# Highly Detailed Implementation Plan\n\n## 1. Fix Direct Environment Method Calls\n\n### Problem\nDirect calls to `env.reset()` and `env.step()` violate OpenEnv protocol.\n\n### Solution: Implement Proper REST Endpoints\n\n#### Files to Modify:\n- `core/server.py` (or main server file)\n- `core/env.py`\n\n#### Steps:\n\n1. **Create Flask/FastAPI routes for OpenEnv endpoints**\n```python\n# core/server.py\nfrom flask import Flask, request, jsonify\nimport core.env as env_module\n\napp = Flask(__name__)\nenv_instance = None\n\n@app.route('/reset', methods=['POST'])\ndef reset_env():\n    global env_instance\n    env_instance = env_module.Environment()  # Create new instance\n    observation = env_instance.get_initial_observation()\n    return jsonify({\n        \"observation\": observation,\n        \"info\": {}\n    })\n\n@app.route('/step', methods=['POST'])\ndef step_env():\n    data = request.json\n    action = data['action']\n    \n    if env_instance is None:\n        return jsonify({\"error\": \"Environment not initialized\"}), 400\n    \n    observation, reward, done, info = env_instance.step(action)\n    return jsonify({\n        \"observation\": observation,\n        \"reward\": reward,\n        \"done\": done,\n        \"info\": info\n    })\n```\n\n2. **Modify Environment Class Interface**\n```python\n# core/env.py\nclass Environment:\n    def __init__(self):\n        self.state = None\n        self.step_count = 0\n        self.max_steps = 1000\n        \n    def get_initial_observation(self):\n        # Return initial state without calling reset()\n        return self._get_observation()\n        \n    def step(self, action):\n        # Process action and return (observation, reward, done, info)\n        self.step_count += 1\n        # ... processing logic ...\n        return observation, reward, done, info\n        \n    def _get_observation(self):\n        # Return current observation\n        pass\n```\n\n## 2. Fix Environment Variable Handling\n\n### Problem\nHardcoded `API_BASE_URL` and `MODEL_NAME` instead of using `os.getenv()`.\n\n### Solution: Use Environment Variables Properly\n\n#### Files to Modify:\n- `config.py` or wherever constants are defined\n- Any inference scripts\n\n#### Steps:\n\n1. **Replace hardcoded values with environment variables**\n```python\n# config.py\nimport os\n\nAPI_BASE_URL = os.getenv('API_BASE_URL', 'http://localhost:8000')\nMODEL_NAME = os.getenv('MODEL_NAME', 'default-model')\n```\n\n2. **Update inference script to use environment variables**\n```python\n# inference.py\nimport os\nfrom config import API_BASE_URL, MODEL_NAME\n\ndef make_prediction(observation):\n    # Use API_BASE_URL and MODEL_NAME from environment\n    url = f\"{API_BASE_URL}/predict\"\n    # ... rest of prediction logic\n```\n\n## 3. Implement Complete Environment Interface\n\n### Problem\nMissing required methods like `state()` and incomplete reset implementation.\n\n### Solution: Add Required Methods\n\n#### Files to Modify:\n- `core/env.py`\n\n#### Steps:\n\n1. **Add state() method**\n```python\n# core/env.py\nclass Environment:\n    def state(self):\n        \"\"\"Return current environment state\"\"\"\n        return {\n            'step_count': self.step_count,\n            'current_observation': self._get_observation(),\n            # Add other relevant state information\n        }\n```\n\n2. **Implement proper reset logic**\n```python\ndef reset(self):\n    \"\"\"Initialize environment to starting state\"\"\"\n    self.step_count = 0\n    self._initialize_state()\n    return self._get_observation()\n```\n\n## 4. Add Deterministic Seeding\n\n### Problem\nMissing deterministic seeding for reproducibility.\n\n### Solution: Add Seed Support\n\n#### Files to Modify:\n- `core/env.py`\n\n#### Steps:\n\n1. **Add seed parameter to environment initialization**\n```python\n# core/env.py\nimport random\nimport numpy as np\n\nclass Environment:\n    def __init__(self, seed=None):\n        if seed is not None:\n            random.seed(seed)\n            np.random.seed(seed)\n        # ... rest of init\n```\n\n2. **Update server to accept seed parameter**\n```python\n# core/server.py\n@app.route('/reset', methods=['POST'])\ndef reset_env():\n    data = request.json or {}\n    seed = data.get('seed')\n    global env_instance\n    env_instance = env_module.Environment(seed=seed)\n    # ... rest of reset logic\n```\n\n## 5. Add Resource Cleanup and Runtime Guards\n\n### Problem\nMissing `env.close()` in finally block and no `MAX_STEPS` guard.\n\n### Solution: Add Proper Cleanup and Limits\n\n#### Files to Modify:\n- `core/server.py`\n- `core/env.py`\n\n#### Steps:\n\n1. **Add close method to environment**\n```python\n# core/env.py\nclass Environment:\n    def close(self):\n        \"\"\"Clean up resources\"\"\"\n        # Close any open connections, files, etc.\n        pass\n```\n\n2. **Add MAX_STEPS guard**\n```python\n# core/env.py\nclass Environment:\n    def __init__(self, max_steps=1000):\n        self.max_steps = max_steps\n        self.step_count = 0\n        \n    def step(self, action):\n        if self.step_count >= self.max_steps:\n            return self._get_observation(), 0, True, {\"max_steps_reached\": True}\n        # ... rest of step logic\n```\n\n3. **Ensure cleanup in server**\n```python\n# core/server.py\n@app.route('/close', methods=['POST'])\ndef close_env():\n    global env_instance\n    if env_instance:\n        env_instance.close()\n        env_instance = None\n    return jsonify({\"status\": \"closed\"})\n```\n\n## 6. Add Dense Reward Signals\n\n### Problem\nReward function may only provide binary signals.\n\n### Solution: Implement Dense Rewards\n\n#### Files to Modify:\n- `core/env.py`\n\n#### Steps:\n\n1. **Enhance reward calculation**\n```python\n# core/env.py\ndef _calculate_reward(self, action, new_state):\n    \"\"\"Calculate dense reward based on multiple factors\"\"\"\n    progress_reward = self._calculate_progress_reward()\n    efficiency_reward = self._calculate_efficiency_reward(action)\n    stability_reward = self._calculate_stability_reward()\n    \n    total_reward = progress_reward + efficiency_reward + stability_reward\n    return max(-1.0, min(1.0, total_reward))  # Clamp between -1 and 1\n```\n\n## 7. Add Logging Tags\n\n### Problem\nMissing START/STEP/END logging tags.\n\n### Solution: Add Structured Logging\n\n#### Files to Modify:\n- `core/env.py`\n- `core/server.py`\n\n#### Steps:\n\n1. **Add logging with tags**\n```python\n# core/env.py\nimport logging\n\nlogger = logging.getLogger(__name__)\n\nclass Environment:\n    def __init__(self):\n        logger.info(\"ENV_START: Initializing environment\")\n        \n    def step(self, action):\n        logger.info(f\"ENV_STEP: Action={action}, Step={self.step_count}\")\n        # ... processing ...\n        logger.info(f\"ENV_STEP_RESULT: Reward={reward}, Done={done}\")\n        return result\n        \n    def close(self):\n        logger.info(\"ENV_END: Environment closed\")\n```\n\n## 8. Update YAML Configuration\n\n### Problem\nMissing optional fields in YAML config.\n\n### Solution: Add Required Fields\n\n#### Files to Modify:\n- `config.yaml` or similar\n\n#### Steps:\n\n1. **Add missing configuration fields**\n```yaml\n# config.yaml\nbase_url: \"http://localhost:8000\"\nenv_id: \"custom-env-v1\"\nmodel_name: \"default-model\"\nmax_steps: 1000\n```\n\nThis comprehensive plan addresses all critical, major, and minor issues identified, ensuring full compliance with OpenEnv requirements and tournament rules."
+  }
+}
