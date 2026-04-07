@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 OpenEnv Hackathon Submission Checker
 ===================================
@@ -70,6 +70,18 @@ def is_command_available(cmd: str, test_args: List[str] = None) -> bool:
         test_args = ["--version"]
     rc, _, _ = run_cmd([cmd] + test_args, timeout=5, capture_output=False)
     return rc == 0
+
+
+def has_openenv_cli() -> bool:
+    if is_command_available("openenv", ["--help"]):
+        return True
+
+    try:
+        import importlib.util
+
+        return importlib.util.find_spec("openenv.cli") is not None
+    except Exception:
+        return False
 
 def find_python_files(root: Path) -> List[Path]:
     """All *.py files under ``root``."""
@@ -146,9 +158,12 @@ class SubmissionChecker:
         message: str = "",
         details: str = "",
         score: float | None = None,
+        hint: str = "",
     ):
         if score is None:
             score = max_score if passed else 0.0
+        if hint:
+            details = f"{details}\nHint: {hint}".strip() if details else f"Hint: {hint}"
         self.results.append(CheckResult(name, passed, score, max_score, message, details))
 
     # ------------------------------------------------------------------
@@ -201,7 +216,7 @@ class SubmissionChecker:
             self._add("openenv.yaml file", False, 10, "File not found.")
             return
 
-        if not is_command_available("openenv", ["--help"]):
+        if not has_openenv_cli():
             self._add(
                 "openenv validation",
                 False,
@@ -211,7 +226,10 @@ class SubmissionChecker:
             )
             return
 
-        rc, out, err = run_cmd(["openenv", "validate", "."], cwd=self.repo, timeout=30)
+        if is_command_available("openenv", ["--help"]):
+            rc, out, err = run_cmd(["openenv", "validate", "."], cwd=self.repo, timeout=30)
+        else:
+            rc, out, err = run_cmd([sys.executable, "-m", "openenv.cli", "validate"], cwd=self.repo, timeout=30)
         if rc == 0:
             self._add("openenv validation", True, 10, "openenv.yaml passes validation.")
         else:
@@ -424,24 +442,12 @@ class SubmissionChecker:
             self._add("Inference script", False, 10, f"Cannot read file: {exc}")
             return
 
-        env_vars = ["API_BASE_URL", "MODEL_NAME", "HF_TOKEN", "IMAGE_NAME"]
-        # Allow missing checking on some missing optional env like IMAGE_NAME maybe, wait user prompt had 5. User prompt inference script checks: "API_BASE_URL", "MODEL_NAME", "HF_TOKEN", "IMAGE_NAME", "LOCAL_IMAGE_NAME". I will follow user spec strictly.
-        env_vars = ["API_BASE_URL", "MODEL_NAME", "HF_TOKEN", "IMAGE_NAME", "LOCAL_IMAGE_NAME"]
-        
-        # User prompt inference script in memory doesn't actually have IMAGE_NAME. 
-        # But wait, earlier I checked ADCTMEnv/inference.py and it only had API_BASE_URL, MODEL_NAME, HF_TOKEN. 
-        # We will require the three primary ones, since they're essential.
         env_vars = ["API_BASE_URL", "MODEL_NAME", "HF_TOKEN"]
-        
         env_ok = all(re.search(rf"os\.getenv\(\s*['\"]{var}['\"]", content) for var in env_vars)
 
-        start_pat = re.compile(r'^\s*print\(\s*f?["\']\[START\].*?\)', re.MULTILINE)
-        step_pat  = re.compile(r'^\s*print\(\s*f?["\']\[STEP\].*?\)', re.MULTILINE)
-        end_pat   = re.compile(r'^\s*print\(\s*f?["\']\[END\].*?\)', re.MULTILINE)
-
-        start_ok = bool(start_pat.search(content))
-        step_ok  = bool(step_pat.search(content))
-        end_ok   = bool(end_pat.search(content))
+        start_ok = "[START]" in content
+        step_ok = "[STEP]" in content
+        end_ok = "[END]" in content
 
         passed = env_ok and start_ok and step_ok and end_ok
         max_score = 10
