@@ -72,6 +72,10 @@ def predict_action(state: Dict[str, object]) -> List[float]:
 
 
 def call_llm(prompt: str) -> str:
+    if not HF_TOKEN and "openai.com" in API_BASE_URL.lower():
+        # Fall back immediately when no remote credentials are available.
+        return ""
+
     api_key_for_client = HF_TOKEN if HF_TOKEN and HF_TOKEN != "none" else "none"
     client = OpenAI(base_url=API_BASE_URL, api_key=api_key_for_client)
 
@@ -111,6 +115,10 @@ def log_step(step: int, action: str, reward: float, done: bool, error: Optional[
 def log_end(success: bool, steps: int, score: float, rewards: List[float]) -> None:
     rewards_str = ",".join(f"{reward:.2f}" for reward in rewards)
     print(f"[END] success={str(success).lower()} steps={steps} score={score:.3f} rewards={rewards_str}", flush=True)
+
+
+def format_exception_message(exc: Exception) -> str:
+    return f"{type(exc).__name__}: {str(exc).replace(chr(10), ' ')}"
 
 
 def _parse_reset_response(payload: Dict[str, object]) -> ResetResponse:
@@ -153,8 +161,16 @@ def run_task(task_name: str) -> float:
             resp = requests.post(f"{ENV_URL}/reset", params={"task_name": task_name}, timeout=30)
         resp.raise_for_status()
 
-        reset_result = _parse_reset_response(resp.json())
+        try:
+            reset_payload = resp.json()
+        except Exception:
+            reset_payload = {}
+
+        reset_result = _parse_reset_response(reset_payload)
         current_observation = reset_result.observation
+
+        if not current_observation or not current_observation.temperatures:
+            return 0.0
 
         task_config_path = os.path.join(os.path.dirname(__file__), "tasks", f"{task_name}.json")
         if not os.path.exists(task_config_path):
@@ -182,7 +198,7 @@ def run_task(task_name: str) -> float:
                     }
                 )
             except Exception as exc:
-                error_msg = f"{type(exc).__name__}: {str(exc).replace('\n', ' ')}"
+                error_msg = format_exception_message(exc)
                 action_vals = predict_action(
                     {
                         "temperatures": current_observation.temperatures,
@@ -201,10 +217,14 @@ def run_task(task_name: str) -> float:
                     timeout=30,
                 )
                 step_resp.raise_for_status()
-                step_result = _parse_step_response(step_resp.json(), current_observation)
+                try:
+                    step_payload = step_resp.json()
+                except Exception:
+                    step_payload = {}
+                step_result = _parse_step_response(step_payload, current_observation)
             except Exception as exc:
                 if not error_msg:
-                    error_msg = f"{type(exc).__name__}: {str(exc).replace('\n', ' ')}"
+                    error_msg = format_exception_message(exc)
                 step_result = StepResponse(
                     observation=current_observation,
                     reward=Reward(value=0.0),
@@ -231,7 +251,7 @@ def run_task(task_name: str) -> float:
         success = score >= 0.4
 
     except Exception as exc:
-        error_msg = f"{type(exc).__name__}: {str(exc).replace('\n', ' ')}"
+        error_msg = format_exception_message(exc)
         print(f"[DEBUG] run_task exception: {error_msg}", file=sys.stderr, flush=True)
     finally:
         log_end(success=success, steps=steps, score=score, rewards=rewards)
