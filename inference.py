@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 from grader.evaluator import evaluate_trajectory
-from inference.prompt import build_prompt as detailed_build_prompt
+from llm_inference.prompt import build_prompt as detailed_build_prompt
 from models import Action, Observation, ResetResponse, Reward, StepResponse
 from tasks.task_config import TaskConfig
 
