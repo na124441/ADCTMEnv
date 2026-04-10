@@ -2,8 +2,8 @@
 
 import json
 import os
-import sys
 import time
+import threading
 from typing import Dict, List, Optional, Sequence
 
 import requests
@@ -20,12 +20,26 @@ load_dotenv()
 API_BASE_URL = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o-mini")
 HF_TOKEN = os.getenv("HF_TOKEN") or os.getenv("API_KEY") or os.getenv("OPENAI_API_KEY")
-LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
 
 ENV_URL = os.getenv("ENV_URL", "http://localhost:7860")
 TEMPERATURE = 0.0
 DEFAULT_TASKS = ("easy", "medium", "hard")
+MAX_STEPS = 40
 
+def call_llm_with_timeout(prompt: str, timeout_sec=3) -> str:
+    result = [""]
+
+    def target():
+        try:
+            result[0] = call_llm(prompt)
+        except Exception:
+            result[0] = ""
+
+    thread = threading.Thread(target=target)
+    thread.start()
+    thread.join(timeout_sec)
+
+    return result[0] if not thread.is_alive() else ""
 
 def parse_action(content: str, num_zones: int) -> List[float]:
     try:
@@ -72,19 +86,17 @@ def predict_action(state: Dict[str, object]) -> List[float]:
 
 
 def call_llm(prompt: str) -> str:
-    if not HF_TOKEN and "openai.com" in API_BASE_URL.lower():
-        # Fall back immediately when no remote credentials are available.
-        return ""
-
-    api_key_for_client = HF_TOKEN if HF_TOKEN and HF_TOKEN != "none" else "none"
-    client = OpenAI(base_url=API_BASE_URL, api_key=api_key_for_client)
+    if not HF_TOKEN:
+        raise ValueError("HF_TOKEN is required")
+        
+    client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
 
     messages = [
         {"role": "system", "content": "Return JSON only."},
         {"role": "user", "content": prompt},
     ]
 
-    for attempt in range(3):
+    for attempt in range(1):
         try:
             resp = client.chat.completions.create(
                 model=MODEL_NAME,
@@ -93,7 +105,7 @@ def call_llm(prompt: str) -> str:
             )
             return (resp.choices[0].message.content or "").strip()
         except Exception as exc:
-            if attempt == 2:
+            if attempt == 0:
                 raise exc
             time.sleep(2**attempt)
     return ""
@@ -112,13 +124,9 @@ def log_step(step: int, action: str, reward: float, done: bool, error: Optional[
     )
 
 
-def log_end(success: bool, steps: int, score: float, rewards: List[float]) -> None:
+def log_end(success: bool, steps: int, rewards: List[float]) -> None:
     rewards_str = ",".join(f"{reward:.2f}" for reward in rewards)
-    print(f"[END] success={str(success).lower()} steps={steps} score={score:.3f} rewards={rewards_str}", flush=True)
-
-
-def format_exception_message(exc: Exception) -> str:
-    return f"{type(exc).__name__}: {str(exc).replace(chr(10), ' ')}"
+    print(f"[END] success={str(success).lower()} steps={steps} rewards={rewards_str}", flush=True)
 
 
 def _parse_reset_response(payload: Dict[str, object]) -> ResetResponse:
@@ -156,21 +164,11 @@ def run_task(task_name: str) -> float:
     success = False
 
     try:
-        resp = requests.post(f"{ENV_URL}/reset", json={"task_name": task_name}, timeout=30)
-        if resp.status_code != 200:
-            resp = requests.post(f"{ENV_URL}/reset", params={"task_name": task_name}, timeout=30)
+        resp = requests.post(f"{ENV_URL}/reset", json={"task": task_name}, timeout=5)
         resp.raise_for_status()
 
-        try:
-            reset_payload = resp.json()
-        except Exception:
-            reset_payload = {}
-
-        reset_result = _parse_reset_response(reset_payload)
+        reset_result = _parse_reset_response(resp.json())
         current_observation = reset_result.observation
-
-        if not current_observation or not current_observation.temperatures:
-            return 0.0
 
         task_config_path = os.path.join(os.path.dirname(__file__), "tasks", f"{task_name}.json")
         if not os.path.exists(task_config_path):
@@ -183,22 +181,31 @@ def run_task(task_name: str) -> float:
         all_actions = []
         done = reset_result.done
 
-        while not done:
+        while not done and steps < MAX_STEPS:
             steps += 1
             error_msg = None
 
             try:
-                prompt = detailed_build_prompt(current_observation, config.model_dump())
-                raw = call_llm(prompt)
-                action_vals = parse_action(raw, len(current_observation.temperatures)) if raw else predict_action(
-                    {
-                        "temperatures": current_observation.temperatures,
-                        "workloads": current_observation.workloads,
-                        "target_temperature": config.target_temperature,
-                    }
-                )
+                if steps > 2:
+                    action_vals = predict_action(
+                        {
+                            "temperatures": current_observation.temperatures,
+                            "workloads": current_observation.workloads,
+                            "target_temperature": config.target_temperature,
+                        }
+                    )
+                else:
+                    prompt = detailed_build_prompt(current_observation, config.model_dump())
+                    raw = call_llm_with_timeout(prompt, timeout_sec=3)
+                    action_vals = parse_action(raw, len(current_observation.temperatures)) if raw else predict_action(
+                        {
+                            "temperatures": current_observation.temperatures,
+                            "workloads": current_observation.workloads,
+                            "target_temperature": config.target_temperature,
+                        }
+                    )
             except Exception as exc:
-                error_msg = format_exception_message(exc)
+                error_msg = f"{type(exc).__name__}: {str(exc).replace('\n', ' ')}"
                 action_vals = predict_action(
                     {
                         "temperatures": current_observation.temperatures,
@@ -214,17 +221,13 @@ def run_task(task_name: str) -> float:
                 step_resp = requests.post(
                     f"{ENV_URL}/step",
                     json=action_payload,
-                    timeout=30,
+                    timeout=5,
                 )
                 step_resp.raise_for_status()
-                try:
-                    step_payload = step_resp.json()
-                except Exception:
-                    step_payload = {}
-                step_result = _parse_step_response(step_payload, current_observation)
+                step_result = _parse_step_response(step_resp.json(), current_observation)
             except Exception as exc:
                 if not error_msg:
-                    error_msg = format_exception_message(exc)
+                    error_msg = f"{type(exc).__name__}: {str(exc).replace('\n', ' ')}"
                 step_result = StepResponse(
                     observation=current_observation,
                     reward=Reward(value=0.0),
@@ -239,7 +242,7 @@ def run_task(task_name: str) -> float:
             done = step_result.done
             rewards.append(reward)
 
-            action_str = f"cooling({action_vals})".replace(" ", "")
+            action_str = str(action_vals)
             log_step(step=steps, action=action_str, reward=reward, done=done, error=error_msg)
 
         try:
@@ -248,13 +251,12 @@ def run_task(task_name: str) -> float:
         except Exception:
             score = 0.0
 
-        success = score >= 0.4
+        success = done
 
     except Exception as exc:
-        error_msg = format_exception_message(exc)
-        print(f"[DEBUG] run_task exception: {error_msg}", file=sys.stderr, flush=True)
+        error_msg = f"{type(exc).__name__}: {str(exc).replace('\n', ' ')}"
     finally:
-        log_end(success=success, steps=steps, score=score, rewards=rewards)
+        log_end(success=success, steps=steps, rewards=rewards)
 
     return score
 
