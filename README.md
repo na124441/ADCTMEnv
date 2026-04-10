@@ -566,6 +566,7 @@ ADCTMSubmission/
 ├── 📄 openenv.yaml
 ├── 📄 pyproject.toml
 ├── 📄 requirements.txt
+├── 📄 inference.py 
 ├── 🧠 core/
 │   ├── env.py
 │   ├── models.py
