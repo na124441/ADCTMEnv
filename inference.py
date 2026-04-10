@@ -26,6 +26,7 @@ TEMPERATURE = 0.0
 DEFAULT_TASKS = ("easy", "medium", "hard")
 MAX_STEPS = 40
 
+
 def call_llm_with_timeout(prompt: str, timeout_sec=3) -> str:
     result = [""]
 
@@ -40,6 +41,7 @@ def call_llm_with_timeout(prompt: str, timeout_sec=3) -> str:
     thread.join(timeout_sec)
 
     return result[0] if not thread.is_alive() else ""
+
 
 def parse_action(content: str, num_zones: int) -> List[float]:
     try:
@@ -88,7 +90,7 @@ def predict_action(state: Dict[str, object]) -> List[float]:
 def call_llm(prompt: str) -> str:
     if not HF_TOKEN:
         raise ValueError("HF_TOKEN is required")
-        
+
     client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
 
     messages = [
@@ -107,7 +109,7 @@ def call_llm(prompt: str) -> str:
         except Exception as exc:
             if attempt == 0:
                 raise exc
-            time.sleep(2**attempt)
+            time.sleep(2 ** attempt)
     return ""
 
 
@@ -205,7 +207,7 @@ def run_task(task_name: str) -> float:
                         }
                     )
             except Exception as exc:
-                error_msg = f"{type(exc).__name__}: {str(exc).replace('\n', ' ')}"
+                error_msg = str(exc).replace('\n', ' ')
                 action_vals = predict_action(
                     {
                         "temperatures": current_observation.temperatures,
@@ -227,7 +229,7 @@ def run_task(task_name: str) -> float:
                 step_result = _parse_step_response(step_resp.json(), current_observation)
             except Exception as exc:
                 if not error_msg:
-                    error_msg = f"{type(exc).__name__}: {str(exc).replace('\n', ' ')}"
+                    error_msg = str(exc).replace('\n', ' ')
                 step_result = StepResponse(
                     observation=current_observation,
                     reward=Reward(value=0.0),
@@ -242,7 +244,7 @@ def run_task(task_name: str) -> float:
             done = step_result.done
             rewards.append(reward)
 
-            action_str = str(action_vals)
+            action_str = str([round(a, 2) for a in action_vals])
             log_step(step=steps, action=action_str, reward=reward, done=done, error=error_msg)
 
         try:
@@ -254,7 +256,7 @@ def run_task(task_name: str) -> float:
         success = done
 
     except Exception as exc:
-        error_msg = f"{type(exc).__name__}: {str(exc).replace('\n', ' ')}"
+        error_msg = str(exc).replace('\n', ' ')
     finally:
         log_end(success=success, steps=steps, rewards=rewards)
 
