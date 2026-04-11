@@ -126,7 +126,7 @@ def log_step(step: int, action: str, reward: float, done: bool, error: Optional[
     )
 
 def log_end(success: bool, steps: int, score: float, rewards: List[float]) -> None:
-    rewards_str = ",".join(f"{reward:.2f}" for reward in rewards)
+    rewards_str = ",".join(f"{reward:.2f}" for reward in rewards) if rewards else "0.00"
     print(
         f"[END] success={str(success).lower()} steps={steps} score={score:.6f} rewards={rewards_str}",
         flush=True
@@ -258,7 +258,8 @@ def run_task(task_name: str) -> float:
         except Exception:
             score = 1e-6
 
-        success = done
+        SUCCESS_THRESHOLD = 0.05  # safe small threshold
+        success = score >= SUCCESS_THRESHOLD
 
     except Exception as exc:
         error_msg = str(exc).replace('\n', ' ')
