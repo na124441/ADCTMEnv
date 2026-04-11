@@ -161,7 +161,8 @@ def run_task(task_name: str) -> float:
     log_start(task_name=task_name, env="ADCTM", model=MODEL_NAME)
 
     steps = 0
-    score = 0.0
+    EPS = 1e-6
+    score = EPS
     rewards: List[float] = []
     success = False
 
@@ -259,6 +260,7 @@ def run_task(task_name: str) -> float:
 
     except Exception as exc:
         error_msg = str(exc).replace('\n', ' ')
+        score = 1e-6
     finally:
         log_end(success=success, steps=steps, rewards=rewards)
 
@@ -267,11 +269,19 @@ def run_task(task_name: str) -> float:
 
 def execute_simulation(task_names: Optional[Sequence[str]] = None) -> Dict[str, float]:
     results: Dict[str, float] = {}
+    EPS = 1e-6
     for task_name in task_names or DEFAULT_TASKS:
         try:
-            results[task_name] = run_task(task_name)
+            score = run_task(task_name)
+
+            # Extra safety clamp
+            score = max(EPS, min(1.0 - EPS, float(score)))
+
+            results[task_name] = score
+
         except Exception:
-            results[task_name] = 0.0
+            results[task_name] = EPS  # NEVER 0.0
+
     return results
 
 
