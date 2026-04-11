@@ -125,10 +125,12 @@ def log_step(step: int, action: str, reward: float, done: bool, error: Optional[
         flush=True,
     )
 
-
-def log_end(success: bool, steps: int, rewards: List[float]) -> None:
+def log_end(success: bool, steps: int, score: float, rewards: List[float]) -> None:
     rewards_str = ",".join(f"{reward:.2f}" for reward in rewards)
-    print(f"[END] success={str(success).lower()} steps={steps} rewards={rewards_str}", flush=True)
+    print(
+        f"[END] success={str(success).lower()} steps={steps} score={score:.6f} rewards={rewards_str}",
+        flush=True
+    )
 
 
 def _parse_reset_response(payload: Dict[str, object]) -> ResetResponse:
@@ -262,7 +264,7 @@ def run_task(task_name: str) -> float:
         error_msg = str(exc).replace('\n', ' ')
         score = 1e-6
     finally:
-        log_end(success=success, steps=steps, rewards=rewards)
+        log_end(success=success, steps=steps, score=score, rewards=rewards)
 
     return score
 
