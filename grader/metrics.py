@@ -27,10 +27,10 @@ def compute_metrics(
     # Convert to NumPy arrays
     temps = np.array([obs["temperatures"] for obs in observations])  # Shape: (steps+1, N)
     cools = np.array([act["cooling"] for act in actions])           # Shape: (steps, N)
-
+    EPS = 1e-6
     num_steps = len(actions)
     if num_steps == 0:
-        return 0.0, 0.0, 0.0, 0.0  # No steps taken
+        return EPS , EPS , EPS   # No steps taken
 
     # 1ï¸âƒ£ Safety metric: % of steps where all zones are below safe_temp
     safe_mask = (temps[1:] <= config.safe_temperature).all(axis=1)  # Skip initial state
